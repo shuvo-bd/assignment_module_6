@@ -12,10 +12,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Contact List',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
       home: const ContactListScreen(),
     );
   }
@@ -31,11 +28,9 @@ class ContactListScreen extends StatefulWidget {
 class _ContactListScreenState extends State<ContactListScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  final List<Contact> contacts = [
+  final List<Contact> _contacts = [
     Contact(name: 'Jawad', phone: '01877-777777'),
     Contact(name: 'Ferdous', phone: '01673-777777'),
-    Contact(name: 'Hasan', phone: '01745-777777'),
-    Contact(name: 'Hasan', phone: '01745-777777'),
     Contact(name: 'Hasan', phone: '01745-777777'),
   ];
 
@@ -46,11 +41,36 @@ class _ContactListScreenState extends State<ContactListScreen> {
     super.dispose();
   }
 
+  void _addContact() {
+    final name = _nameController.text.trim();
+    final phone = _phoneController.text.trim();
+
+    if (name.isEmpty || phone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter both name and phone number.'),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _contacts.add(Contact(name: name, phone: phone));
+    });
+
+    _nameController.clear();
+    _phoneController.clear();
+    FocusScope.of(context).unfocus();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Contact List', style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Contact List',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: const Color(0xFF5B7C99),
         centerTitle: true,
         elevation: 7,
@@ -100,9 +120,7 @@ class _ContactListScreenState extends State<ContactListScreen> {
                 ),
                 const SizedBox(height: 12),
                 ElevatedButton(
-                  onPressed: () {
-                    // Add functionality can be added here
-                  },
+                  onPressed: _addContact,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF5B7C99),
                     padding: const EdgeInsets.symmetric(vertical: 14),
@@ -126,9 +144,9 @@ class _ContactListScreenState extends State<ContactListScreen> {
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(12),
-              itemCount: contacts.length,
+              itemCount: _contacts.length,
               itemBuilder: (context, index) {
-                final contact = contacts[index];
+                final contact = _contacts[index];
                 return Card(
                   margin: const EdgeInsets.symmetric(vertical: 6),
                   elevation: 2,
@@ -138,10 +156,7 @@ class _ContactListScreenState extends State<ContactListScreen> {
                   child: ListTile(
                     leading: CircleAvatar(
                       backgroundColor: Colors.grey[300],
-                      child: const Icon(
-                        Icons.person,
-                        color: Colors.grey,
-                      ),
+                      child: const Icon(Icons.person, color: Colors.grey),
                     ),
                     title: Text(
                       contact.name,
@@ -153,18 +168,14 @@ class _ContactListScreenState extends State<ContactListScreen> {
                     ),
                     subtitle: Text(
                       contact.phone,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     ),
                     trailing: IconButton(
-                      icon: const Icon(
-                        Icons.phone,
-                        color: Colors.blue,
-                      ),
+                      icon: const Icon(Icons.phone, color: Colors.blue),
                       onPressed: () {
-                        // Call functionality can be added here
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Calling ${contact.name}...')),
+                        );
                       },
                     ),
                   ),
